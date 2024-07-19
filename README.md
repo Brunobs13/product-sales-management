@@ -78,11 +78,11 @@ Example:
 
 ## Code Structure
 
-- **Macros**: Define maximum limits for products and sales.
+- ##Macros##: Define maximum limits for products and sales.
   
-- **Data Structures**: `Produto` and `Venda` structures to store product and sales data.
+- ##Data Structures##: `Produto` and `Venda` structures to store product and sales data.
   
-- **Functions**:
+- ##Functions##:
   - `ler_produtos()`: Reads product data from a CSV file.
   - `ler_vendas()`: Reads sales data from a CSV file and updates product sales.
   - `adicionar_produto()`: Adds a new product.
