@@ -1,0 +1,40 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Build artifacts (C/C++)
+/bin/
+*.o
+*.a
+*.so
+*.out
+*.dSYM/
+
+# Python / MLOps hygiene
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# MLflow / data artifacts
+mlruns/
+artifacts/
+.dvc/cache/
+
+# Data engineering temporary zones
+/data/raw/
+/data/interim/
+/data/processed/
+
+# Docker
+.docker/
