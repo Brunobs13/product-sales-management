@@ -1,102 +1,179 @@
-# Product and Sales Management System
+# Product Sales Management (MVC Architecture)
 
-## Overview
+A production-style C project that transforms a monolithic sales script into a modular MVC codebase with tests, CI, and professional documentation.
 
-The Product and Sales Management System is a comprehensive C application designed to manage products and sales efficiently. It includes features for reading products and sales from CSV files, adding, removing, editing products, and generating sales reports. This project showcases your skills in file handling, data structures, and user interaction in C.
+## Project Overview
 
-## Features
+This repository implements a **Product Sales Management** system using a clean **MVC architecture** in C. It supports product lifecycle operations (create/update/delete), sales ingestion, and report generation with clear separation between controllers, repositories, services, and views.
 
-- **Product Management**: Add, remove, and edit product information easily.
-- **Sales Tracking**: Record and manage sales transactions.
-- **Automated Reporting**: Generate detailed sales reports with total sales and revenue.
-- **File Handling**: Read product and sales data from CSV files.
-- **User Interaction**: Simple menu-driven interface for user operations.
+## Business Problem
 
-## Getting Started
+Small retail operations often track products and sales in ad-hoc spreadsheets, making reporting inconsistent and error-prone. The project addresses this by providing a deterministic command-line system that:
 
-### Prerequisites
+- manages product inventory metadata
+- records and validates sales transactions
+- produces reproducible sales KPIs
+- preserves state through CSV persistence
 
-- A C compiler (e.g., GCC)
-- CSV files containing product and sales data
+## Architecture Diagram (Textual)
 
-### Installation
+```
+[View Layer: console_view]
+        |
+        v
+[Controller Layer: product_controller, report_controller]
+        |
+        v
+[Service Layer: report_service]
+        |
+        v
+[Repository Layer: product_repository, sale_repository]
+        |
+        v
+[Data Sources: data/products.csv, data/sales.csv]
+```
 
-1. **Clone the repository**:
-    ```sh
-    git clone https://github.com/yourusername/product-sales-management.git
-    cd product-sales-management
-    ```
+### MVC Mapping
 
-2. **Compile the program**:
-    ```sh
-    gcc main.c -o product_sales_management
-    ```
+- **Model**: `Product`, `Sale`, `ProductCatalog`, `SalesRegistry`
+- **View**: terminal rendering and user input helpers
+- **Controller**: menu actions, orchestration, and user flow
+- **Service**: report calculations and business metrics
+- **Repository**: CSV I/O, data validation, and persistence
 
-3. **Ensure you have the required CSV files** (`products.csv` and `sales.csv`) in the same directory as the executable.
+## Tech Stack
 
-### Usage
+- C11
+- GCC / Clang compatible build
+- Makefile-based build system
+- GitHub Actions for CI
+- CSV data persistence
 
-1. **Run the program**:
-    ```sh
-    ./product_sales_management
-    ```
+## Project Structure
 
-2. **Follow the menu prompts to interact with the system**:
-    - Add a new product
-    - Remove an existing product
-    - Edit product details
-    - Generate a sales report
-    - Exit the program
+```
+.
+├── .github/workflows/ci.yml
+├── configs/
+│   └── app.env.example
+├── data/
+│   ├── products.csv
+│   └── sales.csv
+├── docs/
+│   ├── portfolio_ready.md
+│   ├── repository_audit.md
+│   └── technical_deep_dive.md
+├── include/
+│   ├── controllers/
+│   ├── core/
+│   ├── models/
+│   ├── repositories/
+│   ├── services/
+│   └── views/
+├── legacy/
+│   └── ProgramasDeVendas.c
+├── src/
+│   ├── controllers/
+│   ├── repositories/
+│   ├── services/
+│   ├── views/
+│   └── main.c
+├── tests/
+│   ├── test_product_repository.c
+│   └── test_report_service.c
+├── .env.example
+├── .gitignore
+└── Makefile
+```
 
-## CSV File Formats
+## Setup Instructions
 
-### Products CSV (`products.csv`)
+1. Clone the repository:
 
-The file should contain product data in the following format:
-```csv
-code,designation,price
+```bash
+git clone https://github.com/Brunobs13/product-sales-management.git
+cd product-sales-management
+```
 
+2. Build the project:
 
+```bash
+make all
+```
 
-Example:
+3. (Optional) configure runtime paths:
 
-1,Apple,0.50
-2,Banana,0.30
-3,Orange,0.80
+```bash
+cp .env.example .env
+export $(cat .env | xargs)
+```
 
-Sales CSV (sales.csv)
-The file should contain sales data in the following format:
+4. Run the application:
 
-product_code,quantity,date
+```bash
+make run
+```
 
+5. Run tests:
 
-Example:
+```bash
+make test
+```
 
-1,10,2024-07-19
-2,5,2024-07-20
-3,8,2024-07-21
+## CI/CD Overview
 
-## Code Structure
+The CI pipeline (`.github/workflows/ci.yml`) runs on push and pull requests.
 
-- ##Macros##: Define maximum limits for products and sales.
-  
-- ##Data Structures##: `Produto` and `Venda` structures to store product and sales data.
-  
-- ##Functions##:
-  - `ler_produtos()`: Reads product data from a CSV file.
-  - `ler_vendas()`: Reads sales data from a CSV file and updates product sales.
-  - `adicionar_produto()`: Adds a new product.
-  - `remover_produto()`: Removes a product by code.
-  - `editar_produto()`: Edits product details.
-  - `gerar_relatorio()`: Generates a sales report.
-  - `main()`: Main function that drives the menu and calls other functions based on user input.
+- compiles the project (`make all`)
+- executes unit tests (`make test`)
+- blocks regressions before merge
 
+## Data Versioning Strategy
 
-### Notes:
-- **Replace** `yourusername` in the clone URL with your actual GitHub username.
-- **Replace** `Your Name` and `your-email@example.com` with your actual name and email address.
-- Ensure that the formatting is preserved when you paste it into your GitHub repository's README file to maintain clarity and structure.
+Current state uses versioned CSV snapshots in Git for deterministic local execution. For larger datasets and collaborative workflows, the next step is integrating DVC with a remote backend (S3/DagsHub) and storing immutable dataset versions per release tag.
 
+## Model Tracking Strategy
 
+This project is currently rule-based (non-ML). If forecasting or demand prediction is introduced, MLflow should track:
 
+- experiment parameters
+- model metrics
+- model artifacts
+- model promotion lifecycle
 
+## Deployment Strategy
+
+Current deployment target is local CLI execution. Production hardening path:
+
+1. package binary via release pipeline
+2. create containerized runtime image
+3. deploy with environment-specific configs
+4. expose reporting through API layer (future extension)
+
+## Security Considerations
+
+- no credentials are hardcoded
+- runtime data paths are controlled by environment variables
+- `.gitignore` blocks local secrets and artifacts
+- legacy monolith kept isolated under `legacy/` for auditability
+- input validation enforces numeric/date constraints
+
+## Lessons Learned
+
+- splitting a monolith into MVC reduces change risk and clarifies responsibilities
+- repositories + services make business logic testable without UI coupling
+- build automation and CI are mandatory even for C CLI projects
+
+## Future Improvements
+
+1. Add transactional file locking for concurrent writes.
+2. Add structured logging and operational audit trail.
+3. Add API adapter layer (REST/gRPC) for external integrations.
+4. Introduce DVC for data lineage and remote dataset governance.
+5. Add observability metrics (Prometheus/OpenTelemetry bridge).
+
+## Additional Technical Documents
+
+- Audit report: `docs/repository_audit.md`
+- Deep technical analysis: `docs/technical_deep_dive.md`
+- Portfolio-ready narratives: `docs/portfolio_ready.md`
